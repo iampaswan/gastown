@@ -1,4 +1,3 @@
-from backend.utils.llm import call_llm
 import json
 
 
@@ -12,22 +11,25 @@ def create_convoy(query: str):
         "type": "research",
         "input": query
     })
-    convoy.append({
-        "type": "summarize" 
-    })
-    convoy.append({
-        "type": "critic"
-    })    
+
+    if len(query.split()) > 3:
+        convoy.append({
+            "type": "summarize"
+        })
+
+    if "impact" in query_lower or "analysis" in query_lower:
+        convoy.append({
+            "type": "critic"
+        })
+        
     convoy.append({
         "type": "write"
     })
-
     print("Created convoy:", convoy)
+
     return convoy
 
 
-
-def create_convoy(query: str):
     planning_prompt = f"""
 You are a task planner.
 

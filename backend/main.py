@@ -41,13 +41,8 @@ async def websocket_endpoint(websocket: WebSocket, task_id: str):
             await websocket.send_text(data)
 
             if data == "[DONE]":
-                break
-
-        if time.time() - last_sent > 10:
-            await websocket.send_text("__ping__")
-            last_sent = time.time()
+                break;
     
-
         await asyncio.sleep(0.1)
 
 

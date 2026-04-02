@@ -35,12 +35,10 @@ const ResearchBox: React.FC = () => {
                return;
             }
 
-            setResult((prev) => prev + event.data);
-         };
-
-         socket.onmessage = (event) => {
             if (event.data === "__ping__") return;
             console.log(event.data);
+
+            setResult((prev) => prev + event.data);
          };
 
          socket.onerror = (err) => {
@@ -49,7 +47,7 @@ const ResearchBox: React.FC = () => {
          };
 
          socket.onclose = () => {
-            console.log("WebSocket closed");
+            console.log("--- WebSocket closed ---");
          };
 
       } catch (error) {

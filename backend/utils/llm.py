@@ -32,6 +32,8 @@ def llm_stream(prompt: str):
     for line in response.iter_lines():
         if line:
             chunk = line.decode("utf-8")
-            print(f"Steaming chunk: {chunk}")
+            print(f"Streaming chunk: {chunk}")
             yield chunk
 
+
+        
