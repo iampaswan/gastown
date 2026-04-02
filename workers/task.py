@@ -3,7 +3,11 @@ from workers.celery_app import celery
 import redis
 import json
 
-from backend.utils.llm import llm_stream
+from backend.agents.research_agent import research_agent
+from backend.agents.summarizer_agent import summarizer_agent
+from backend.agents.critic_agent import critic_agent
+from backend.agents.writer_agent import writer_agent    
+
 
 r = redis.Redis(host="localhost", port=6379, db=0)
 
@@ -20,7 +24,7 @@ def execute_convoy(task_id, convoy):
         for bead in convoy:
             step = bead["type"]
 
-            r.publish(channel, f"\n\n⚙️ {step.upper()}...\n")
+            r.publish(channel, f"\n\n----- {step.upper()} -----\n")
 
             if step == "research":
                 query = bead["input"]
@@ -29,9 +33,10 @@ def execute_convoy(task_id, convoy):
                 
 
                 prompts = [
-                    f"Research from news sources: {query}",
-                    f"Research from academic perspective: {query}",
-                    f"General overview: {query}"
+                    f"Technical analysis of: {query}",
+                    f"Economic and industry impact of: {query}",
+                    f"Latest news and developments: {query}",
+                    f"Academic research insights on: {query}"
                     ]
 
 
@@ -40,7 +45,7 @@ def execute_convoy(task_id, convoy):
                 for p in prompts:
                     full_text = ""
 
-                    for chunk in llm_stream(p):
+                    for chunk in research_agent(p):
                         try:
                             data = json.loads(chunk)
                             text = data.get("response", "")
@@ -66,7 +71,7 @@ def execute_convoy(task_id, convoy):
             elif step == "summarize":
                 full_text = ""
 
-                for chunk in llm_stream(f"Summarize this:\n{data_store.get('research', '')}"):
+                for chunk in summarizer_agent(f"Summarize this:\n{data_store.get('research', '')}"):
                     try:
                         data = json.loads(chunk)
                         text = data.get("response", "")
@@ -86,7 +91,7 @@ def execute_convoy(task_id, convoy):
             elif step == "critic":
                 full_text = ""
 
-                for chunk in llm_stream(f"Critically improve this:\n{data_store.get('summary', '')}"):
+                for chunk in critic_agent(f"Critically improve this:\n{data_store.get('summary', '')}"):
                     try:
                         data = json.loads(chunk)
                         text = data.get("response", "")
@@ -108,7 +113,7 @@ def execute_convoy(task_id, convoy):
 
                 full_text = ""
 
-                for chunk in llm_stream(f"""
+                for chunk in writer_agent(f"""
 Write a professional report based on this:
 
 {input_text}

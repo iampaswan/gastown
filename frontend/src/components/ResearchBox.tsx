@@ -5,7 +5,6 @@ import { researchApi } from "../config/congfiguration";
 const ResearchBox: React.FC = () => {
    const [query, setQuery] = useState<string>("");
    const [result, setResult] = useState<string>("");
-   const [loading, setLoading] = useState<boolean>(false);
 
    const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -17,7 +16,6 @@ const ResearchBox: React.FC = () => {
       if (!query.trim()) return;
 
       setResult("");
-      setLoading(true);
 
       try {
          // Step 1: start research
@@ -28,13 +26,12 @@ const ResearchBox: React.FC = () => {
          const socket = new WebSocket(`ws://127.0.0.1:8000/ws/${taskId}`);
 
          socket.onopen = () => {
-            console.log("✅ WebSocket connected");
+            console.log("-- WebSocket connected --");
          };
 
          socket.onmessage = (event) => {
             if (event.data === "[DONE]") {
                socket.close();
-               setLoading(false); // ✅ stop loading when done
                return;
             }
 
@@ -44,7 +41,6 @@ const ResearchBox: React.FC = () => {
          socket.onerror = (err) => {
             console.error("WebSocket error:", err);
             setResult(" Error in streaming");
-            setLoading(false);
          };
 
          socket.onclose = () => {
@@ -54,7 +50,6 @@ const ResearchBox: React.FC = () => {
       } catch (error) {
          console.error(error);
          setResult(" API Error");
-         setLoading(false);
       }
    };
 
@@ -70,14 +65,9 @@ const ResearchBox: React.FC = () => {
          </h2>
 
 
-         {loading && (
-            <p className="text-gray-400 animate-pulse">
-               Researching...
-            </p>
-         )}
 
          {result && (
-            <div className="flex-1 bg-gray-800 border border-gray-700 rounded-lg p-4 overflow-y-auto custom-scrollbar max-h-[85vh]">
+            <div className="flex-1 bg-gray-800 border border-gray-700 rounded-lg p-4 overflow-y-auto custom-scrollbar max-h-[88vh]">
                <pre className="whitespace-pre-wrap wrap-break-words text-sm leading-relaxed">
                   {result}
                </pre>
@@ -88,8 +78,8 @@ const ResearchBox: React.FC = () => {
          <div className="flex gap-3 m-b-4 absolute bottom-0 left-0 w-full mb-2 px-4">
 
             <input
-               className="flex-1 bg-gray-800 border border-gray-600 text-white placeholder-gray-400 px-4 py-2 rounded-lg focus:outline-none hover:border-blue-500
-               focus:ring-2 focus:ring-blue-500"
+               className="flex-1 bg-gray-800 border border-gray-600 text-white placeholder-gray-400 px-4 py-2 rounded-lg 
+               focus:outline-none hover:border-blue-500 focus:ring-2 focus:ring-blue-500"
                type="text"
                value={query}
                onChange={(e) => setQuery(e.target.value)}
@@ -98,7 +88,7 @@ const ResearchBox: React.FC = () => {
 
             <button
                onClick={handleResearch}
-               className="bg-blue-600 hover:border-blue-500 hover:focus:ring-2 focus:ring-blue-500 transition px-5 py-2 
+               className="bg-blue-600 hover:border-blue-600 hover:focus:ring-2 focus:ring-blue-500 transition px-5 py-2 
                border border-gray-600 rounded-lg font-semibold p-2"
             >
                Send
