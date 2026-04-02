@@ -1,0 +1,15 @@
+curl https://aimodel-production-aa60.up.railway.app/api/generate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "tinyllama",
+    "prompt": "Say hello in one sentence"
+  }'
+
+aimodel-production-e10d.up.railway.app
+
+
+curl https://aimodel-production-e10d.up.railway.app/api/tags
+
+
+
+celery -A workers.celery-app worker --loglevel=info
