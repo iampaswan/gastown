@@ -25,22 +25,39 @@ def execute_convoy(task_id, convoy):
             if step == "research":
                 query = bead["input"]
 
-                full_text = ""
+                r.publish(channel, f"Running multiple research:\n\n")
 
-                for chunk in llm_stream(f"Research in detail: {query}"):
-                    try:
-                        data = json.loads(chunk)
-                        text = data.get("response", "")
+                prompts = [
+                    f"Research from news sources: {query}",
+                    f"Research from academic perspective: {query}",
+                    f"General overview: {query}"
+                    ]
 
-                        if text:
-                            r.publish(channel, text)
-                            full_text += text
 
-                    except Exception as e:
-                        print("Parse error:", e)
-                        continue
+                allresults = []
 
-                data_store["research"] = full_text
+                for p in prompts:
+                    full_text = ""
+
+                    for chunk in llm_stream(p):
+                        try:
+                            data = json.loads(chunk)
+                            text = data.get("response", "")
+
+                            if text:
+                                r.publish(channel, text)
+                                full_text += text
+
+                        except Exception as e:
+                            print("Parse error:", e)
+                            continue
+
+                    allresults.append(full_text)
+
+                combined_results = "\n\n".join(allresults)
+                data_store["research"] = combined_results    
+            
+                
 
         
             # SUMMARIZER AGENT
