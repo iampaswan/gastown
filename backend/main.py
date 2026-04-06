@@ -52,14 +52,15 @@ from backend.mayor.mayor import create_convoy
 
 @app.post("/research")
 def research(query: str):
-    convoy = create_convoy(query)  
 
+    convoy = create_convoy(query)  
     task_id = str(uuid.uuid4())
 
     execute_convoy.delay(task_id, convoy)   
 
     return {
-        "task_id": task_id
+        "task_id": task_id,
+        "plan": convoy,
     }
 
 

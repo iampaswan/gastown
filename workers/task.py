@@ -24,7 +24,7 @@ def execute_convoy(task_id, convoy):
         for bead in convoy:
             step = bead["type"]
 
-            r.publish(channel, f"\n\n----- {step.upper()} -----\n")
+            r.publish(channel, f"\n\n----- Running -> {step.upper()} -----\n")
 
             if step == "research":
                 query = bead["input"]
@@ -43,6 +43,7 @@ def execute_convoy(task_id, convoy):
                 allresults = []
 
                 for p in prompts:
+                    r.publish(channel, f"\n\nRuinning >> {p}\n")
                     full_text = ""
 
                     for chunk in research_agent(p):

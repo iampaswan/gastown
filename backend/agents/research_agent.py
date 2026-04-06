@@ -12,56 +12,31 @@ Conduct a deep, multi-perspective research analysis on the following topic:
 TOPIC:
 {query}
 
-RESEARCH REQUIREMENTS:
+STRUCTURE:
 
-1. COVERAGE
-- Provide a comprehensive overview of the topic
-- Include historical context and recent developments
-- Cover multiple perspectives (economic, technological, social, geopolitical if relevant)
+## Overview (max 120 words)
+## Key Findings (5–7 bullets, data-driven)
+## Analysis (max 200 words)
+## Recent Developments (max 120 words)
+## Challenges (max 120 words)
+## Conclusion (max 80 words)
+## Sources (5–8 credible sources)
 
-2. FACTUAL DEPTH
-- Include verified facts and key statistics
-- Mention specific data points, studies, or reports
-- Avoid vague statements
+RULES:
+- Total output must not exceed 1000 words
+- No repetition across sections
+- Use precise data and real sources only
+- Be analytical, not verbose
 
-3. SOURCE QUALITY
-- Use high-quality sources such as:
-  - Academic papers
-  - Government reports
-  - Reputable news organizations
-  - Industry research (McKinsey, Gartner, etc.)
 
-4. STRUCTURE YOUR OUTPUT AS:
 
-## Overview
-(detailed explanation)
-
-## Key Findings
-- bullet points with data
-
-## Detailed Analysis
-(in-depth explanation with reasoning)
-
-## Recent Developments
-(latest trends, updates)
-
-## Challenges / Criticism
-(balanced view)
-
-## Conclusion
-(clear takeaway)
-
-## Sources
-- List at least 5–10 credible sources
-- Use realistic citation format:
-  [1] Source name – title – year
-  [2] Organization – report name – year
-
-IMPORTANT RULES:
-- Do NOT invent fake sources
-- If unsure, say "limited data available"
-- Be precise and analytical, not generic
-- Prefer depth over length
-
-Start now.
 """)
+
+
+
+  #  prompts = [
+  #                   f"Technical analysis of: {query}",
+  #                   f"Economic and industry impact of: {query}",
+  #                   f"Latest news and developments: {query}",
+  #                   f"Academic research insights on: {query}"
+  #                   ]

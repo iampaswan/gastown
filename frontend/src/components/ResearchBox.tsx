@@ -1,17 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import { researchApi } from "../config/congfiguration";
 
-
 const ResearchBox: React.FC = () => {
    const [query, setQuery] = useState<string>("");
    const [result, setResult] = useState<string>("");
 
+   const [plan, setPlan] = useState<any[]>([]);
+   const [currentStep, setCurrentStep] = useState<string>("");
+
    const bottomRef = useRef<HTMLDivElement>(null);
-
-
-   const [plan, setPlan] = useState();
-   const [currentStep, setCurrentStep] = useState(0);
-   const [output, setOutput] = useState("");
 
    useEffect(() => {
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -21,13 +18,16 @@ const ResearchBox: React.FC = () => {
       if (!query.trim()) return;
 
       setResult("");
+      setPlan([]);
+      setCurrentStep("");
 
       try {
-         // Step 1: start research
          const res = await researchApi(query);
-         const taskId = res.task_id;
 
-         // Step 2: open websocket
+         const taskId = res.task_id;
+         setPlan(res.plan || []);
+         console.log("Received plan:", res.plan);
+
          const socket = new WebSocket(`ws://127.0.0.1:8000/ws/${taskId}`);
 
          socket.onopen = () => {
@@ -41,42 +41,44 @@ const ResearchBox: React.FC = () => {
             }
 
             if (event.data === "__ping__") return;
-            console.log(event.data);
 
-            setResult((prev) => prev + event.data);
+            try {
+               const parsed = JSON.parse(event.data);
+
+               if (parsed.type === "step") {
+                  setCurrentStep(parsed.step);
+                  return;
+               }
+            } catch {
+               setResult((prev) => prev + event.data);
+            }
          };
 
          socket.onerror = (err) => {
             console.error("WebSocket error:", err);
-            setResult(" Error in streaming");
+            setResult("Error in streaming");
          };
 
          socket.onclose = () => {
             console.log("--- WebSocket closed ---");
          };
-
       } catch (error) {
          console.error(error);
-         setResult(" API Error");
+         setResult("API Error");
       }
    };
 
-
-
    return (
+      <div className="flex h-screen w-full">
 
+         <div className="flex flex-col w-4/5 bg-gray-900 text-white p-4 relative">
 
-      <div className="flex flex-row h-screen w-full">
-         <div className="flex flex-col gap-2 h-screen w-80vw bg-gray-900 text-white p-4 overflow-hidden postion-relative">
-
-            <h2 className="text-xl font-bold text-center">
+            <h2 className="text-xl font-bold text-center mb-2">
                Gas Town Multi-Agent Orchestration System
             </h2>
 
-
-
             {result && (
-               <div className="flex-1 bg-gray-800 border border-gray-700 rounded-lg p-4 overflow-y-auto custom-scrollbar max-h-[88vh]">
+               <div className="flex-1 bg-gray-800 border border-gray-700 rounded-lg p-4 overflow-y-auto max-h-[87vh] custom-scrollbar">
                   <pre className="whitespace-pre-wrap wrap-break-words text-sm leading-relaxed">
                      {result}
                   </pre>
@@ -84,12 +86,10 @@ const ResearchBox: React.FC = () => {
                </div>
             )}
 
-            <div className="flex gap-3 m-b-4 absolute bottom-0 left-0 w-full mb-2 px-4">
-
+            {/* INPUT */}
+            <div className="flex gap-3 absolute bottom-2 left-0 w-full px-4">
                <input
-                  className="flex-1 bg-gray-800 border border-gray-600 text-white placeholder-gray-400 px-4 py-2 rounded-lg 
-               focus:outline-none hover:border-blue-500 focus:ring-2 focus:ring-blue-500"
-                  type="text"
+                  className="flex-1 bg-gray-800 border border-gray-600 text-white px-4 py-2 rounded-lg focus:outline-none hover:focus:ring-2 focus:ring-blue-500"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Enter topic..."
@@ -97,16 +97,60 @@ const ResearchBox: React.FC = () => {
 
                <button
                   onClick={handleResearch}
-                  className="bg-blue-600 hover:border-blue-600 hover:focus:ring-2 focus:ring-blue-500 transition px-5 py-2 
-               border border-gray-600 rounded-lg font-semibold p-2"
+                  className=" px-5 py-2 rounded-lg font-semibold border border-gray-600 focus:outline-none hover:focus:ring-2 focus:ring-blue-500"
                >
                   Send
                </button>
+            </div>
+         </div>
 
+         <div className="w-1/5 bg-gray-950 text-white p-4 border-l border-gray-700">
+
+            <h3 className="text-lg font-bold mb-4">Mayor Plan & Actions</h3>
+
+            <div className="space-y-2">
+               {plan.length > 0 ? (
+                  plan.map((p, i) => (
+                     <div
+                        key={i}
+                        className={`p-2 rounded-lg text-sm transition ${currentStep === p.type
+                           ? "bg-green-600 font-bold"
+                           : "bg-gray-800"
+                           }`}
+                     >
+                        {p.type.toUpperCase()}
+                     </div>
+                  ))
+               ) : (
+                  <p className="text-gray-400 text-sm">No plan yet</p>
+               )}
             </div>
 
-         </div>
-         <div className="border-white h-screen w-20vw border-t-2 mt-4">
+            {currentStep && (
+               <div className="mt-6">
+                  <h4 className="text-md font-semibold mb-2">⚙️ Running</h4>
+                  <div className="bg-blue-600 p-2 rounded-lg text-center">
+                     {currentStep.toUpperCase()}
+                  </div>
+               </div>
+            )}
+
+            {plan.length > 0 && (
+               <div className="mt-6">
+                  <h4 className="text-sm mb-2">Progress</h4>
+                  <div className="bg-gray-700 h-2 rounded">
+                     <div
+                        className="bg-green-500 h-2 rounded"
+                        style={{
+                           width: `${((plan.findIndex(p => p.type === currentStep) + 1) /
+                              plan.length) *
+                              100
+                              }%`,
+                        }}
+                     />
+                  </div>
+               </div>
+            )}
 
          </div>
       </div>
