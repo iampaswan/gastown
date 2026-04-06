@@ -17,7 +17,6 @@ def call_llm(prompt: str) -> str:
     return result.get("response", "")
 
 
-
 def llm_stream(prompt: str):
     response = requests.post(
         "http://localhost:11434/api/generate",

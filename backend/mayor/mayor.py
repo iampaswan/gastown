@@ -9,11 +9,6 @@ def create_convoy(query: str):
     print("Creating convoy for query:", query)
 
 
-    if any(word in query.lower() for word in ["api", "backend", "server", "endpoint"]):
-     return [
-        {"type": "backend", "input": query}
-    ]
-
     convoy.append({
         "type": "research",
         "input": query
