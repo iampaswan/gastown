@@ -7,6 +7,7 @@ from backend.agents.research_agent import research_agent
 from backend.agents.summarizer_agent import summarizer_agent
 from backend.agents.critic_agent import critic_agent
 from backend.agents.writer_agent import writer_agent    
+from backend.agents.backend_api import backendapi_agent
 
 
 r = redis.Redis(host="localhost", port=6379, db=0)
@@ -64,8 +65,6 @@ def execute_convoy(task_id, convoy):
                 data_store["research"] = combined_results    
             
                 
-
-        
             # SUMMARIZER AGENT
      
             elif step == "summarize":
@@ -112,6 +111,9 @@ def execute_convoy(task_id, convoy):
                 input_text = data_store.get("critic") or data_store.get("summary") or data_store.get("research", "")
 
                 full_text = ""
+                
+
+
 
                 for chunk in writer_agent(f"""
 Write a professional report based on this:
@@ -144,6 +146,13 @@ Include:
                 data_store["final"] = full_text
 
     
+            elif step == "backend":
+                full_text = ""
+                for chunk in backendapi_agent(bead["input"]):
+                    r.publish(channel, text)
+                    full_text += text
+
+                   
         #DONE
     
         r.publish(channel, "\n\n COMPLETED\n")
