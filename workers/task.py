@@ -9,7 +9,7 @@ from backend.agents.critic_agent import critic_agent
 from backend.agents.writer_agent import writer_agent  
 
 from backend.agents.backendapi_agent import backend_agent
-from backend.agents.code_agent import code_agent
+from backend.agents.generate_code_agent import generate_code_agent
 from backend.agents.explainer_agent import explainer_agent
 from backend.agents.compare_agent import compare_agent
 from backend.agents.creative_agent import creative_agent
@@ -28,6 +28,7 @@ def execute_convoy(task_id, convoy):
 
     try:
         for bead in convoy:
+            
             step = bead["type"]
 
             r.publish(channel, f"\n\n----- Running -> {step.upper()} -----\n")
@@ -218,7 +219,7 @@ Include:
                 input_text = bead.get("input", "")
                 full_text = ""
 
-                for chunk in code_agent(input_text):
+                for chunk in generate_code_agent(input_text):
                     try:
                         data = json.loads(chunk)
                         text = data.get("response", "")

@@ -67,22 +67,6 @@ def research(query: str):
 
 
 
-
-
-
-# @app.post("/research")
-# def research(query: str):
-#     task_id = str(uuid.uuid4())
-
-#     print("Sending task to worker:", task_id)
-
-#     execute_convoy.delay(task_id, query)
-
-#     return {"task_id": task_id}
-
-
-# @app.get("/result/{task_id}")
-# def get_result(task_id: str):
     from workers.celery_app import celery
     result = celery.AsyncResult(task_id)
 

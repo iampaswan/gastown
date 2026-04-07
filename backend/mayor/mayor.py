@@ -9,13 +9,13 @@ You are an NLP system.
 Analyze the user query and extract ALL intents.
 
 Possible intents:
-- backend
-- code
-- explain
-- research
-- summarize
-- compare
-- creative
+- backend : use this intend when user asked for creation of backend API.
+- generate_code : use this intend when user asked to generate code. 
+- explain : use this intend when user asked to explain anything.
+- research : use this intend when user asked for research on any topic.
+- summarize : use this intend when user asked for summarize anything.
+- compare : use this intend when user asked for comparison btween or more things.
+- creative : use this intend when user asked for create content on any topic. 
 
 Return JSON like:
 [
@@ -85,7 +85,7 @@ def create_convoy(query: str):
 
     intent_to_agent = {
         "backend": "backend",
-        "code": "code",
+        "generate_code": "generate_code",
         "explain": "explain",
         "research": "research",
         "summarize": "summarize",
