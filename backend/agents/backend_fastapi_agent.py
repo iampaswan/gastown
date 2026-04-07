@@ -1,7 +1,7 @@
 
 from backend.utils.llm import llm_stream
 
-def backend_agent(query: str):
+def backend_fastapi_agent(query: str):
     prompt = f"""
 You are a senior backend engineer.
 

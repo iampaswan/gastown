@@ -8,7 +8,8 @@ from backend.agents.summarizer_agent import summarizer_agent
 from backend.agents.critic_agent import critic_agent
 from backend.agents.writer_agent import writer_agent  
 
-from backend.agents.backendapi_agent import backend_agent
+from backend.agents.backend_fastapi_agent import backend_fastapi_agent
+from backend.agents.backend_node_api import backend_node_agent
 from backend.agents.generate_code_agent import generate_code_agent
 from backend.agents.explainer_agent import explainer_agent
 from backend.agents.compare_agent import compare_agent
@@ -185,7 +186,7 @@ Include:
 
                 data_store["final"] = full_text
             
-            elif step == "backend":
+            elif step == "backend_fastapi":
                 input_text = bead.get("input", "")
                 full_text = ""
 
@@ -194,7 +195,7 @@ Include:
                         "step": step
                     }))
 
-                for chunk in backend_agent(input_text):
+                for chunk in backend_fastapi_agent(input_text):
                     try:
                         data = json.loads(chunk)
                         text = data.get("response", "")
@@ -212,8 +213,46 @@ Include:
                         print("Parse error:", e)
                         continue
 
-                data_store["backend"] = full_text
-            
+                data_store["backend_fastapi"] = full_text
+                r.publish(channel, json.dumps({
+                    "type":"done",
+                    "step":step
+                }))
+
+            elif step == "backend_nodeapi":
+                input_text = bead.get(input)
+                full_text = " "
+
+                r.publish(channel, json.dumps({
+                    "type":"step",
+                    "step":step
+
+                }))
+
+                for chunk in backend_node_agent(input_text):
+                    try:
+                        data = json.loads(chunk)
+                        text = data.get("response", "")
+                        
+                        if text:
+                            r.publish(channel,text)
+                            r.publish(channel, json.dumps({
+                                     "type": "log",
+                                     "step": step,
+                                     "content":text,
+                          }))
+                            full_text += text
+                            
+                    except Exception as e: 
+                         print("Parse error:", e)
+                         continue 
+                    
+                data_store["backend_nodeapi"] = full_text    
+                r.publish(channel, json.dumps({
+                    "type":"done",
+                    "step":step
+                }))
+              
             elif step == "generate_code":
                 input_text = bead.get("input", "")
                 full_text = ""
@@ -240,7 +279,7 @@ Include:
                         print("Parse error:", e)
                         continue
 
-                data_store["code"] = full_text
+                data_store["generate_code"] = full_text
      
             elif step == "explain":
                 r.publish(channel, json.dumps({
@@ -269,7 +308,7 @@ Include:
                         print("Parse error:", e)
                         continue
 
-                data_store["explain"] = full_text           
+                data_store["explain"] = full_text       
      
             elif step == "compare":
                 r.publish(channel, json.dumps({
