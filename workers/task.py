@@ -18,7 +18,6 @@ from backend.agents.creative_agent import creative_agent
 
 r = redis.Redis(host="localhost", port=6379, db=0)
 
-from backend.memory.memory_store import store_memory,get_memory
 
 @celery.task
 def execute_convoy(task_id, convoy):

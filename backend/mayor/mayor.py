@@ -4,9 +4,6 @@ from backend.utils.llm import call_llm
 
 
 
-
-
-
 def create_plan(query: str):
     prompt = f"""
 You are an AI task planner.
@@ -99,6 +96,9 @@ Query:
     start = response.find("[")
     end = response.rfind("]") + 1
     return json.loads(response[start:end])
+
+
+
 
 
 

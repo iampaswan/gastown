@@ -1,4 +1,4 @@
-from backend.mayor.mayor import create_convoy
+# from backend.mayor.mayor import create_convoy
 from workers.task import execute_convoy
 
 
@@ -66,13 +66,3 @@ def research(query: str):
 
 
 
-
-    from workers.celery_app import celery
-    result = celery.AsyncResult(task_id)
-
-    print(f"Checking result for task {task_id}: status={result.status}")
-
-    return {
-        "status": result.status,
-        "result": result.result
-    }
