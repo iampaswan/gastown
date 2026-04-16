@@ -1,5 +1,5 @@
 
-from backend.workers.celery_app import celery
+from workers.celery_app import celery
 import redis
 import json
 

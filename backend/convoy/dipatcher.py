@@ -1,8 +1,5 @@
 
-from backend.workers.task import execute_bead_task
-
-
-
+from workers.task import execute_bead_task
 
 def dispatch_convoy(convoy):
     task_ids = []
