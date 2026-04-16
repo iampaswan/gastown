@@ -1,5 +1,5 @@
 
-from workers.task import execute_bead_task
+from backend.workers.task import execute_bead_task
 
 
 
